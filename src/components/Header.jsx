@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Car, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,15 +25,33 @@ export default function Header() {
           </div>
 
           <nav className="hidden lg:flex items-center gap-10">
-            {navItems.map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors"
-              >
-                {item}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              const slug = item.toLowerCase().replace(/\s+/g, "-");
+
+              if (item === "About Us") {
+                return (
+                  <Link key={item} to="/about" className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
+                    {item}
+                  </Link>
+                );
+              }
+
+              // Home should navigate to root
+              if (item === "Home") {
+                return (
+                  <Link key={item} to="/" className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
+                    {item}
+                  </Link>
+                );
+              }
+
+              // Other internal sections on the home page should link to /#section
+              return (
+                <Link key={item} to={`/#${slug}`} className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
+                  {item}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
@@ -53,16 +72,31 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-6">
           <nav className="flex flex-col gap-4">
-            {navItems.map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-gray-700 font-medium py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              const slug = item.toLowerCase().replace(/\s+/g, "-");
+
+              if (item === "About Us") {
+                return (
+                  <Link key={item} to="/about" className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
+                    {item}
+                  </Link>
+                );
+              }
+
+              if (item === "Home") {
+                return (
+                  <Link key={item} to="/" className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
+                    {item}
+                  </Link>
+                );
+              }
+
+              return (
+                <Link key={item} to={`/#${slug}`} className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
+                  {item}
+                </Link>
+              );
+            })}
             <button className="bg-[#E53E3E] text-white px-7 py-3 rounded-xl font-semibold mt-2 w-full">
               Choose Car
             </button>
