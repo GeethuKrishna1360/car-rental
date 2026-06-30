@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ShieldCheck,
   Award,
@@ -425,12 +426,18 @@ export default function AboutUs() {
             minutes — no lines, no pressure.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button className="rounded-xl bg-[#E53E3E] px-7 py-3.5 font-semibold text-white transition hover:bg-red-700 active:scale-[0.98]">
+            <Link
+              to="/#listings"
+              className="rounded-xl bg-[#E53E3E] px-7 py-3.5 font-semibold text-white transition hover:bg-red-700 active:scale-[0.98]"
+            >
               Browse the Fleet
-            </button>
-            <button className="rounded-xl border border-white/20 px-7 py-3.5 font-semibold text-white transition hover:border-white/50">
+            </Link>
+            <Link
+              to="/contact"
+              className="rounded-xl border border-white/20 px-7 py-3.5 font-semibold text-white transition hover:border-white/50"
+            >
               Contact Our Team
-            </button>
+            </Link>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs text-white/50">

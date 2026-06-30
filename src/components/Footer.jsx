@@ -8,8 +8,17 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const quickLinks = ["Home", "About Us", "Listings", "How it Works", "Blog", "Contact"];
+  const toForItem = (item) => {
+    if (item === "Home") return "/";
+    if (item === "About Us") return "/about";
+    if (item === "Contact") return "/contact";
+    return `/#${item.toLowerCase().replace(/\s+/g, "-")}`;
+  };
+
   return (
     <footer id="contact" className="bg-gray-900 text-gray-400 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,18 +65,16 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-bold mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              {["Home", "About Us", "Listings", "Blog", "Contact"].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="hover:text-[#E53E3E] transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ),
-              )}
+              {quickLinks.map((item) => (
+                <li key={item}>
+                  <Link
+                    to={toForItem(item)}
+                    className="hover:text-[#E53E3E] transition-colors"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -98,15 +105,32 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#E53E3E] flex-shrink-0 mt-0.5" />
-                <span>123 Main Street, New York, NY 10001</span>
+                <a 
+                  href="https://maps.google.com/?q=1st+Floor,+Capital+Tower,+Kumarapuram,+Thiruvananthapuram,+Kerala+695011"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  1st Floor, Capital Tower, Kumarapuram, Thiruvananthapuram, Kerala 695011
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#E53E3E] flex-shrink-0" />
-                <span>1-800-RENT-CAR</span>
+                <a 
+                  href="tel:+919947000500" 
+                  className="hover:text-white transition-colors"
+                >
+                  099470 00500
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#E53E3E] flex-shrink-0" />
-                <span>info@millennium.com</span>
+                <a 
+                  href="mailto:info@millennium.com" 
+                  className="hover:text-white transition-colors"
+                >
+                  info@millennium.com
+                </a>
               </li>
             </ul>
           </div>

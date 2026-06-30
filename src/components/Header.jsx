@@ -1,68 +1,75 @@
-import { useState } from "react";
-import { Car, Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "../assets/millennium-logo.jpg";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navItems = [
-    "Home",
-    "Listings",
-    "How it Works",
-    "About Us",
-    "Blog",
-    "Contact",
-  ];
+  const [scrolled, setScrolled] = useState(false);
+
+  const navItems = ["Home", "Listings", "How it Works", "About Us", "Contact"];
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#E53E3E] p-2.5 rounded-xl">
-              <Car className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Millennium</span>
-          </div>
+    <header
+      className={`sticky top-0 z-50 border-b bg-white/95 backdrop-blur-sm transition-shadow ${
+        scrolled ? "border-gray-100 shadow-sm" : "border-transparent"
+      }`}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="group flex shrink-0 items-center">
+            <img
+              src={logo}
+              alt="Millennium Group Rent A Car"
+              className="h-12 w-auto rounded-md object-contain transition-transform duration-300 group-hover:scale-[1.03] sm:h-14"
+            />
+          </Link>
 
-          <nav className="hidden lg:flex items-center gap-10">
+          <nav className="hidden items-center gap-10 lg:flex">
             {navItems.map((item) => {
               const slug = item.toLowerCase().replace(/\s+/g, "-");
+              const to =
+                item === "About Us"
+                  ? "/about"
+                  : item === "Contact"
+                  ? "/contact"
+                  : item === "Home"
+                  ? "/"
+                  : `/#${slug}`;
 
-              if (item === "About Us") {
-                return (
-                  <Link key={item} to="/about" className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
-                    {item}
-                  </Link>
-                );
-              }
-
-              // Home should navigate to root
-              if (item === "Home") {
-                return (
-                  <Link key={item} to="/" className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
-                    {item}
-                  </Link>
-                );
-              }
-
-              // Other internal sections on the home page should link to /#section
               return (
-                <Link key={item} to={`/#${slug}`} className="text-gray-600 hover:text-[#E53E3E] font-medium transition-colors">
+                <Link
+                  key={item}
+                  to={to}
+                  className="group relative font-medium text-gray-600 transition-colors hover:text-[#E53E3E]"
+                >
                   {item}
+                  <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-[#E53E3E] transition-all duration-300 group-hover:w-full" />
                 </Link>
               );
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-4">
-            <button className="bg-[#E53E3E] text-white px-7 py-3 rounded-xl font-semibold hover:bg-red-700 transition-all shadow-lg shadow-red-500/25">
+          <div className="hidden items-center gap-4 lg:flex">
+            <Link
+              to="/#listings"
+              className="rounded-xl bg-[#E53E3E] px-7 py-3 font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:bg-red-700 active:scale-[0.98]"
+            >
               Choose Car
-            </button>
+            </Link>
           </div>
 
           <button
-            className="lg:hidden p-2"
+            className="p-2 lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -70,34 +77,31 @@ export default function Header() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-6">
+        <div className="border-t border-gray-100 bg-white px-4 py-6 lg:hidden">
           <nav className="flex flex-col gap-4">
             {navItems.map((item) => {
               const slug = item.toLowerCase().replace(/\s+/g, "-");
-
-              if (item === "About Us") {
-                return (
-                  <Link key={item} to="/about" className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
-                    {item}
-                  </Link>
-                );
-              }
-
-              if (item === "Home") {
-                return (
-                  <Link key={item} to="/" className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
-                    {item}
-                  </Link>
-                );
-              }
+              const to =
+                item === "About Us"
+                  ? "/about"
+                  : item === "Contact"
+                  ? "/contact"
+                  : item === "Home"
+                  ? "/"
+                  : `/#${slug}`;
 
               return (
-                <Link key={item} to={`/#${slug}`} className="text-gray-700 font-medium py-2" onClick={() => setMobileMenuOpen(false)}>
+                <Link
+                  key={item}
+                  to={to}
+                  className="py-2 font-medium text-gray-700"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   {item}
                 </Link>
               );
             })}
-            <button className="bg-[#E53E3E] text-white px-7 py-3 rounded-xl font-semibold mt-2 w-full">
+            <button className="mt-2 w-full rounded-xl bg-[#E53E3E] px-7 py-3 font-semibold text-white">
               Choose Car
             </button>
           </nav>

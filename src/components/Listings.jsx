@@ -31,7 +31,7 @@ const cars = [
     rating: 4.6,
     trips: 168,
     image:
-      "https://images.unsplash.com/photo-1606611013016-969c19ba27c5?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&h=400&fit=crop",
   },
   {
     name: "Ford Mustang 2023",
@@ -42,7 +42,7 @@ const cars = [
     rating: 4.9,
     trips: 97,
     image:
-      "https://images.unsplash.com/photo-1584345604476-8ec5f162d238?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&h=400&fit=crop",
   },
   {
     name: "Jeep Wrangler 2022",
@@ -130,7 +130,7 @@ const cars = [
     rating: 4.6,
     trips: 133,
     image:
-      "https://images.unsplash.com/photo-1629897048514-3dd7414efd76?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&h=400&fit=crop",
   },
   {
     name: "Kia Sportage 2023",
@@ -141,7 +141,7 @@ const cars = [
     rating: 4.5,
     trips: 119,
     image:
-      "https://images.unsplash.com/photo-1622194993300-7d0a4358ef41?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&h=400&fit=crop",
   },
   {
     name: "Volkswagen Tiguan 2022",
