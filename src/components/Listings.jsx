@@ -10,6 +10,16 @@ import {
   Loader2,
 } from "lucide-react";
 
+const INR_FORMATTER = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+function formatINR(value) {
+  return INR_FORMATTER.format(value);
+}
+
 const cars = [
   {
     name: "Toyota Camry 2022",
@@ -222,7 +232,7 @@ function CarCard({ car, index, visible, onSelect }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="absolute top-4 right-4 rounded-lg bg-white/90 px-3 py-1.5 shadow-sm backdrop-blur-sm">
-          <span className="text-lg font-bold text-[#E53E3E]">${car.price}</span>
+          <span className="text-lg font-bold text-[#E53E3E]">{formatINR(car.price)}</span>
           <span className="text-xs text-gray-500">/day</span>
         </div>
 
@@ -382,16 +392,16 @@ function BookingModal({ car, onClose }) {
 
             <div className="mt-5 space-y-2 rounded-xl bg-gray-50 p-4 text-sm">
               <div className="flex justify-between text-gray-600">
-                <span>${car.price} × {days} day{days > 1 ? "s" : ""}</span>
-                <span>${subtotal}</span>
+                <span>{formatINR(car.price)} × {days} day{days > 1 ? "s" : ""}</span>
+                <span>{formatINR(subtotal)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Service fee</span>
-                <span>${serviceFee}</span>
+                <span>{formatINR(serviceFee)}</span>
               </div>
               <div className="flex justify-between border-t border-gray-200 pt-2 text-base font-bold text-gray-900">
                 <span>Total</span>
-                <span>${total}</span>
+                <span>{formatINR(total)}</span>
               </div>
             </div>
 
@@ -410,7 +420,7 @@ function BookingModal({ car, onClose }) {
                   <Loader2 className="h-4 w-4 animate-spin" /> Confirming booking…
                 </>
               ) : (
-                `Book Now · $${total}`
+                `Book Now · ${formatINR(total)}`
               )}
             </button>
           </div>
