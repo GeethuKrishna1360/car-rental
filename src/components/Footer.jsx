@@ -11,7 +11,14 @@ import {
 import { Link } from "react-router-dom";
 
 export default function Footer() {
-  const quickLinks = ["Home", "About Us", "Listings", "How it Works", "Blog", "Contact"];
+  const quickLinks = [
+    "Home",
+    "About Us",
+    "Listings",
+    "How it Works",
+    "Blog",
+    "Contact",
+  ];
   const toForItem = (item) => {
     if (item === "Home") return "/";
     if (item === "About Us") return "/about";
@@ -105,31 +112,32 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#E53E3E] flex-shrink-0 mt-0.5" />
-                <a 
+                <a
                   href="https://maps.google.com/?q=1st+Floor,+Capital+Tower,+Kumarapuram,+Thiruvananthapuram,+Kerala+695011"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  1st Floor, Capital Tower, Kumarapuram, Thiruvananthapuram, Kerala 695011
+                  1st Floor, Capital Tower, Kumarapuram, Thiruvananthapuram,
+                  Kerala 695011
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#E53E3E] flex-shrink-0" />
-                <a 
-                  href="tel:+919947000500" 
+                <a
+                  href="tel:+919947000500"
                   className="hover:text-white transition-colors"
                 >
-                  099470 00500
+                  +91 99470 00500
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#E53E3E] flex-shrink-0" />
-                <a 
-                  href="mailto:info@millennium.com" 
+                <a
+                  href="mailto:info@millennium.com"
                   className="hover:text-white transition-colors"
                 >
-                  info@millennium.com
+                  abhilashgomez@gmail.com
                 </a>
               </li>
             </ul>

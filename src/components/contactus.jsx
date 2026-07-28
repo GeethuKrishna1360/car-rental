@@ -17,20 +17,20 @@ const contactInfo = [
   {
     icon: <Phone className="h-5 w-5" />,
     label: "Call Us",
-    value: "+1 (800) 555-0199",
+    value: "+91 9947000500",
     sub: "Mon–Sun, 24/7 support line",
   },
   {
     icon: <Mail className="h-5 w-5" />,
     label: "Email Us",
-    value: "hello@millenniumgrouprentals.com",
+    value: "abhilashgomez@gmail.com",
     sub: "We reply within a few hours",
   },
   {
     icon: <MapPin className="h-5 w-5" />,
     label: "Visit Us",
-    value: "1420 Liberty Avenue, Suite 200",
-    sub: "Open across 27 city locations",
+    value: "Kumarapuram, Thiruvananthapuram",
+    sub: "Kerala 695011",
   },
   {
     icon: <Clock className="h-5 w-5" />,
@@ -40,7 +40,13 @@ const contactInfo = [
   },
 ];
 
-const subjects = ["General Inquiry", "Booking Support", "Fleet & Pricing", "Partnership", "Other"];
+const subjects = [
+  "General Inquiry",
+  "Booking Support",
+  "Fleet & Pricing",
+  "Partnership",
+  "Other",
+];
 
 function useReveal(threshold = 0.15) {
   const ref = useRef(null);
@@ -56,7 +62,7 @@ function useReveal(threshold = 0.15) {
           observer.disconnect();
         }
       },
-      { threshold }
+      { threshold },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -65,7 +71,15 @@ function useReveal(threshold = 0.15) {
   return [ref, inView];
 }
 
-function FloatingField({ label, type = "text", value, onChange, error, textarea, name }) {
+function FloatingField({
+  label,
+  type = "text",
+  value,
+  onChange,
+  error,
+  textarea,
+  name,
+}) {
   const [focused, setFocused] = useState(false);
   const hasValue = value && value.length > 0;
   const Tag = textarea ? "textarea" : "input";
@@ -95,7 +109,9 @@ function FloatingField({ label, type = "text", value, onChange, error, textarea,
       >
         {label}
       </label>
-      {error && <p className="mt-1.5 text-xs font-medium text-red-500">{error}</p>}
+      {error && (
+        <p className="mt-1.5 text-xs font-medium text-red-500">{error}</p>
+      )}
     </div>
   );
 }
@@ -163,7 +179,10 @@ export default function ContactUs() {
         className="relative overflow-hidden bg-[#0F1115] py-24 text-center text-white"
       >
         <div className="cu-blob pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-red-600/20 blur-3xl" />
-        <div className="cu-blob pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-red-600/15 blur-3xl" style={{ animationDelay: "3s" }} />
+        <div
+          className="cu-blob pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-red-600/15 blur-3xl"
+          style={{ animationDelay: "3s" }}
+        />
 
         <div
           className="cu-reveal relative mx-auto max-w-2xl px-4 sm:px-6 lg:px-8"
@@ -180,8 +199,8 @@ export default function ContactUs() {
             Let's Get You On the Road
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-white/70">
-            Questions about a booking, your fleet options, or a partnership?
-            Our team typically replies within a couple of hours.
+            Questions about a booking, your fleet options, or a partnership? Our
+            team typically replies within a couple of hours.
           </p>
         </div>
       </section>
@@ -237,7 +256,7 @@ export default function ContactUs() {
               <div>
                 <h3 className="font-bold">Headquarters</h3>
                 <p className="text-sm text-white/60">
-                  1420 Liberty Avenue, Suite 200, Springfield
+                  Kumarapuram, Thiruvananthapuram, Kerala 695011
                 </p>
               </div>
               <div className="h-px bg-white/10" />
@@ -276,7 +295,9 @@ export default function ContactUs() {
                 <div className="cu-pop mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Message sent</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Message sent
+                </h3>
                 <p className="mt-2 max-w-xs text-sm text-gray-500">
                   Thanks for reaching out — a member of our team will get back
                   to you shortly.
@@ -284,7 +305,13 @@ export default function ContactUs() {
                 <button
                   onClick={() => {
                     setStatus("idle");
-                    setForm({ name: "", email: "", phone: "", subject: subjects[0], message: "" });
+                    setForm({
+                      name: "",
+                      email: "",
+                      phone: "",
+                      subject: subjects[0],
+                      message: "",
+                    });
                   }}
                   className="mt-6 rounded-xl border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                 >
@@ -294,7 +321,9 @@ export default function ContactUs() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Send Us a Message</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Send Us a Message
+                  </h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Fill out the form and we'll get back to you shortly.
                   </p>

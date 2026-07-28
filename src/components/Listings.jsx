@@ -7,7 +7,7 @@ import {
   Calendar,
   Star,
   ShieldCheck,
-  Loader2,
+  MessageCircle,
 } from "lucide-react";
 
 const INR_FORMATTER = new Intl.NumberFormat("en-IN", {
@@ -19,6 +19,9 @@ const INR_FORMATTER = new Intl.NumberFormat("en-IN", {
 function formatINR(value) {
   return INR_FORMATTER.format(value);
 }
+
+// WhatsApp number bookings get sent to (country code + number, no + or spaces)
+const WHATSAPP_NUMBER = "919947000500";
 
 const cars = [
   {
@@ -199,6 +202,21 @@ function diffInDays(from, to) {
   return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)));
 }
 
+/** Builds a wa.me link pre-filled with the booking details. Not called in demo mode — kept here so the live WhatsApp redirect can be re-enabled by calling this in handleBook. */
+function buildWhatsAppUrl({ car, pickup, dropoff, days, total }) {
+  const message = [
+    `Hi Millennium Group! I'd like to book the *${car.name}*.`,
+    "",
+    `Pick-up: ${pickup}`,
+    `Drop-off: ${dropoff} (${days} day${days > 1 ? "s" : ""})`,
+    `Estimated total: ${formatINR(total)}`,
+    "",
+    "Please confirm availability.",
+  ].join("\n");
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
 /** Skeleton placeholder shown while listings "load" */
 function CardSkeleton() {
   return (
@@ -220,7 +238,9 @@ function CarCard({ car, index, visible, onSelect }) {
       style={{
         transitionDelay: visible ? `${index * 90}ms` : "0ms",
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.97)",
+        transform: visible
+          ? "translateY(0) scale(1)"
+          : "translateY(24px) scale(0.97)",
       }}
     >
       <div className="relative overflow-hidden">
@@ -232,7 +252,9 @@ function CarCard({ car, index, visible, onSelect }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="absolute top-4 right-4 rounded-lg bg-white/90 px-3 py-1.5 shadow-sm backdrop-blur-sm">
-          <span className="text-lg font-bold text-[#E53E3E]">{formatINR(car.price)}</span>
+          <span className="text-lg font-bold text-[#E53E3E]">
+            {formatINR(car.price)}
+          </span>
           <span className="text-xs text-gray-500">/day</span>
         </div>
 
@@ -254,7 +276,9 @@ function CarCard({ car, index, visible, onSelect }) {
         <div className="mb-3 flex items-start justify-between gap-2">
           <h3 className="font-bold text-lg text-gray-900">{car.name}</h3>
         </div>
-        <p className="mb-3 text-xs text-gray-400">{car.trips} trips completed</p>
+        <p className="mb-3 text-xs text-gray-400">
+          {car.trips} trips completed
+        </p>
 
         <div className="mb-4 flex items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-1.5">
@@ -285,7 +309,7 @@ function CarCard({ car, index, visible, onSelect }) {
 function BookingModal({ car, onClose }) {
   const [pickup, setPickup] = useState(todayISO());
   const [dropoff, setDropoff] = useState(todayISO(2));
-  const [step, setStep] = useState("form"); // form -> confirming -> confirmed
+  const [step, setStep] = useState("form"); // form -> sent
   const [closing, setClosing] = useState(false);
 
   const days = diffInDays(pickup, dropoff);
@@ -310,8 +334,8 @@ function BookingModal({ car, onClose }) {
   };
 
   const handleBook = () => {
-    setStep("confirming");
-    setTimeout(() => setStep("confirmed"), 1400);
+    // Demo mode: no live WhatsApp redirect — just show what would be sent
+    setStep("sent");
   };
 
   return (
@@ -338,7 +362,11 @@ function BookingModal({ car, onClose }) {
         </button>
 
         <div className="relative h-44 w-full overflow-hidden">
-          <img src={car.image} alt={car.name} className="h-full w-full object-cover" />
+          <img
+            src={car.image}
+            alt={car.name}
+            className="h-full w-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-4 left-5 text-white">
             <h3 className="text-xl font-bold">{car.name}</h3>
@@ -349,7 +377,7 @@ function BookingModal({ car, onClose }) {
           </div>
         </div>
 
-        {step !== "confirmed" ? (
+        {step !== "sent" ? (
           <div className="p-6">
             <div className="mb-5 flex items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-1.5">
@@ -392,7 +420,9 @@ function BookingModal({ car, onClose }) {
 
             <div className="mt-5 space-y-2 rounded-xl bg-gray-50 p-4 text-sm">
               <div className="flex justify-between text-gray-600">
-                <span>{formatINR(car.price)} × {days} day{days > 1 ? "s" : ""}</span>
+                <span>
+                  {formatINR(car.price)} × {days} day{days > 1 ? "s" : ""}
+                </span>
                 <span>{formatINR(subtotal)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
@@ -412,28 +442,43 @@ function BookingModal({ car, onClose }) {
 
             <button
               onClick={handleBook}
-              disabled={step === "confirming"}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#E53E3E] py-3.5 font-semibold text-white transition-all hover:bg-red-700 active:scale-[0.98] disabled:opacity-80"
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3.5 font-semibold text-white transition-all hover:bg-[#1ebe5a] active:scale-[0.98]"
             >
-              {step === "confirming" ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Confirming booking…
-                </>
-              ) : (
-                `Book Now · ${formatINR(total)}`
-              )}
+              <MessageCircle className="h-4 w-4" />
+              Book Now via WhatsApp · {formatINR(total)}
             </button>
           </div>
         ) : (
           <div className="flex flex-col items-center px-6 py-10 text-center">
-            <div className="lst-pop mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
-              <ShieldCheck className="h-8 w-8" />
+            <div className="lst-pop mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366]">
+              <MessageCircle className="h-8 w-8" />
             </div>
-            <h4 className="text-lg font-bold text-gray-900">Booking confirmed</h4>
+            <h4 className="text-lg font-bold text-gray-900">
+              Booking request ready
+            </h4>
             <p className="mt-1.5 max-w-xs text-sm text-gray-500">
-              {car.name} is reserved from {pickup} to {dropoff}. A
-              confirmation has been sent to your inbox.
+              In the live site, this would open WhatsApp with your booking
+              details pre-filled and send them straight to our team. Here's a
+              preview of that message:
             </p>
+
+            <div className="mt-5 w-full rounded-xl border border-gray-100 bg-gray-50 p-4 text-left text-xs leading-relaxed text-gray-600">
+              <p>
+                Hi Millennium Group! I'd like to book the{" "}
+                <span className="font-semibold">{car.name}</span>.
+              </p>
+              <p className="mt-2">Pick-up: {pickup}</p>
+              <p>
+                Drop-off: {dropoff} ({days} day{days > 1 ? "s" : ""})
+              </p>
+              <p>Estimated total: {formatINR(total)}</p>
+              <p className="mt-2">Please confirm availability.</p>
+            </div>
+
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-600">
+              Demo mode · no message sent
+            </span>
+
             <button
               onClick={handleClose}
               className="mt-6 w-full rounded-xl border border-gray-200 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
