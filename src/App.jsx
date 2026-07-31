@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
 import ContactUs from "./components/ContactUs";
+import Login from "./components/Login";
 import ScrollToHash from "./components/ScrollToHash";
 import { Routes, Route } from "react-router-dom";
 
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
 
       <Footer />

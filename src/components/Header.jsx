@@ -7,7 +7,14 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const navItems = ["Home", "Listings", "How it Works", "About Us", "Contact"];
+  const navItems = [
+    "Home",
+    "Listings",
+    "How it Works",
+    "About Us",
+    "Contact",
+    "Login",
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -39,10 +46,12 @@ export default function Header() {
                 item === "About Us"
                   ? "/about"
                   : item === "Contact"
-                  ? "/contact"
-                  : item === "Home"
-                  ? "/"
-                  : `/#${slug}`;
+                    ? "/contact"
+                    : item === "Login"
+                      ? "/login"
+                      : item === "Home"
+                        ? "/"
+                        : `/#${slug}`;
 
               return (
                 <Link
@@ -85,10 +94,12 @@ export default function Header() {
                 item === "About Us"
                   ? "/about"
                   : item === "Contact"
-                  ? "/contact"
-                  : item === "Home"
-                  ? "/"
-                  : `/#${slug}`;
+                    ? "/contact"
+                    : item === "Login"
+                      ? "/login"
+                      : item === "Home"
+                        ? "/"
+                        : `/#${slug}`;
 
               return (
                 <Link
