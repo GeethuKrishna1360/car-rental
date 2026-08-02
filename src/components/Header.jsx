@@ -13,7 +13,6 @@ export default function Header() {
     "How it Works",
     "About Us",
     "Contact",
-    "Login",
   ];
 
   useEffect(() => {

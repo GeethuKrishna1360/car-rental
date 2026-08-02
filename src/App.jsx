@@ -6,12 +6,15 @@ import ContactUs from "./components/ContactUs";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import ScrollToHash from "./components/ScrollToHash";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 export default function App() {
+  const location = useLocation();
+  const hideHeader = location.pathname === "/login";
+
   return (
     <div className="min-h-screen bg-white text-gray-900 antialiased">
-      <Header />
+      {!hideHeader && <Header />}
 
       <ScrollToHash />
 

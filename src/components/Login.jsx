@@ -13,12 +13,38 @@ import {
   Sparkles,
   Users,
   Building2,
+  X,
+  AlertTriangle,
 } from "lucide-react";
 
 const features = [
-  { icon: <ShieldCheck className="h-4 w-4" />, label: "RERA Certified" },
-  { icon: <Car className="h-4 w-4" />, label: "500+ Vehicles" },
-  { icon: <Users className="h-4 w-4" />, label: "50,000+ Customers" },
+ 
+  { icon: <Car className="h-4 w-4" />, label: "50+ Vehicles" },
+  { icon: <Users className="h-4 w-4" />, label: "5000+ Customers" },
+];
+
+const TESTIMONIALS = [
+  {
+    quote: "Our mission is simple: to earn your trust every single day.",
+    name: "Mr. Patrick Gomez",
+    role: "Founder & Managing Director",
+    avatar:
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop",
+  },
+  {
+    quote: "Booking took two minutes and the car was waiting at the airport.",
+    name: "Anjali Menon",
+    role: "Customer, Trivandrum",
+    avatar:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop",
+  },
+  {
+    quote: "Transparent pricing, no surprises at drop-off. That's rare.",
+    name: "Rahul Nair",
+    role: "Customer, Kochi",
+    avatar:
+      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=80&h=80&fit=crop",
+  },
 ];
 
 const ADMIN_EMAIL = "admin@gmail.com";
@@ -29,19 +55,26 @@ function FloatingField({
   type = "text",
   value,
   onChange,
+  onKeyUp,
   error,
   name,
   icon,
   endAdornment,
+  hint,
 }) {
   const [focused, setFocused] = useState(false);
-  const hasValue = value && value.length > 0;
+  const hasValue = Boolean(value) && String(value).length > 0;
+  const errorId = error ? `${name}-error` : undefined;
 
   return (
     <div className="relative">
       <div
         className={`relative rounded-xl transition-shadow ${
-          focused && !error ? "shadow-[0_0_0_4px_rgba(229,62,62,0.1)]" : ""
+          error
+            ? "lg-shake"
+            : focused
+            ? "shadow-[0_0_0_4px_rgba(229,62,62,0.1)]"
+            : ""
         }`}
       >
         {icon && (
@@ -54,12 +87,16 @@ function FloatingField({
           </span>
         )}
         <input
+          id={name}
           name={name}
           type={type}
           value={value}
           onChange={onChange}
+          onKeyUp={onKeyUp}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={errorId}
           className={`peer w-full rounded-xl border bg-white py-4 pb-2.5 pt-5 text-sm text-gray-900 outline-none transition-colors ${
             icon ? "pl-11 pr-11" : "px-4 pr-11"
           } ${
@@ -69,6 +106,7 @@ function FloatingField({
           }`}
         />
         <label
+          htmlFor={name}
           className={`pointer-events-none absolute transition-all duration-200 ${
             icon ? "left-11" : "left-4"
           } ${
@@ -85,8 +123,15 @@ function FloatingField({
           </span>
         )}
       </div>
+      {hint && !error && (
+        <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-amber-600">
+          <AlertTriangle className="h-3 w-3" /> {hint}
+        </p>
+      )}
       {error && (
-        <p className="mt-1.5 text-xs font-medium text-red-500">{error}</p>
+        <p id={errorId} role="alert" className="mt-1.5 text-xs font-medium text-red-500">
+          {error}
+        </p>
       )}
     </div>
   );
@@ -100,6 +145,9 @@ export default function Login() {
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | loading | success
+  const [capsLockOn, setCapsLockOn] = useState(false);
+  const [showDemoBanner, setShowDemoBanner] = useState(true);
+  const [quoteIndex, setQuoteIndex] = useState(0);
 
   const isAdminEmail = form.email.trim().toLowerCase() === ADMIN_EMAIL;
 
@@ -108,13 +156,25 @@ export default function Login() {
     return () => clearTimeout(t);
   }, []);
 
+  // Rotate testimonials every 5s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setQuoteIndex((i) => (i + 1) % TESTIMONIALS.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
     if (errors[name]) setErrors((er) => ({ ...er, [name]: undefined }));
   };
 
-  const validate = () => {
+  const handlePasswordKeyUp = (e) => {
+    setCapsLockOn(e.getModifierState && e.getModifierState("CapsLock"));
+  };
+
+  const validateEmail = () => {
     const next = {};
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Enter a valid email";
     if (!form.password || form.password.length < 6)
@@ -123,9 +183,19 @@ export default function Login() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const finishLogin = (asAdmin) => {
+    setStatus("loading");
+    setTimeout(() => {
+      setStatus("success");
+      setTimeout(() => {
+        navigate(asAdmin ? "/dashboard" : "/");
+      }, 1200);
+    }, 1300);
+  };
+
+  const handleEmailSubmit = (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validateEmail()) return;
 
     // Admin email must match the admin password exactly; any other valid
     // email/password combo is treated as a customer login (demo only —
@@ -137,19 +207,9 @@ export default function Login() {
       }));
       return;
     }
-
-    setStatus("loading");
-    setTimeout(() => {
-      setStatus("success");
-      setTimeout(() => {
-        if (isAdminEmail) {
-          navigate("/dashboard");
-        } else {
-          navigate("/");
-        }
-      }, 1200);
-    }, 1300);
+    finishLogin(isAdminEmail);
   };
+
 
   return (
     <main className="min-h-screen bg-white">
@@ -178,8 +238,20 @@ export default function Login() {
           100% { transform: translateX(220%) skewX(-15deg); }
         }
         .lg-btn:hover .lg-shine { animation: lg-shine 0.9s ease; }
+        @keyframes lg-shake {
+          10%, 90% { transform: translateX(-1px); }
+          20%, 80% { transform: translateX(2px); }
+          30%, 50%, 70% { transform: translateX(-4px); }
+          40%, 60% { transform: translateX(4px); }
+        }
+        .lg-shake { animation: lg-shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes lg-fade-slide {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .lg-fade-slide { animation: lg-fade-slide 0.4s ease both; }
         @media (prefers-reduced-motion: reduce) {
-          .lg-reveal, .lg-blob, .lg-pop, .lg-car-ghost, .lg-shine, .lg-progress { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; width: 100% !important; }
+          .lg-reveal, .lg-blob, .lg-pop, .lg-car-ghost, .lg-shine, .lg-progress, .lg-shake, .lg-fade-slide { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; width: 100% !important; }
         }
       `}</style>
 
@@ -220,10 +292,7 @@ export default function Login() {
                 transform: mounted ? "translateY(0)" : "translateY(20px)",
               }}
             >
-              <span className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-red-300 backdrop-blur-sm">
-                <Sparkles className="h-3.5 w-3.5" />
-                Welcome Back
-              </span>
+             
               <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl">
                 Your one hub for mobility,{" "}
                 <span className="text-[#E53E3E]">property & more</span>
@@ -250,25 +319,41 @@ export default function Login() {
                 ))}
               </div>
 
+              {/* Rotating testimonial */}
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm">
                 <Quote className="mb-3 h-6 w-6 text-red-300/50" />
-                <p className="text-sm font-medium leading-relaxed text-white/85">
-                  "Our mission is simple: to earn your trust every single day."
-                </p>
-                <div className="mt-3 flex items-center gap-2.5">
-                  <img
-                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop"
-                    alt="Mr. Patrick Gomez"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="text-xs font-semibold text-white">
-                      Mr. Patrick Gomez
-                    </p>
-                    <p className="text-[11px] text-white/50">
-                      Founder & Managing Director
-                    </p>
+                <div key={quoteIndex} className="lg-fade-slide">
+                  <p className="min-h-[3.2rem] text-sm font-medium leading-relaxed text-white/85">
+                    "{TESTIMONIALS[quoteIndex].quote}"
+                  </p>
+                  <div className="mt-3 flex items-center gap-2.5">
+                    <img
+                      src={TESTIMONIALS[quoteIndex].avatar}
+                      alt={TESTIMONIALS[quoteIndex].name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-xs font-semibold text-white">
+                        {TESTIMONIALS[quoteIndex].name}
+                      </p>
+                      <p className="text-[11px] text-white/50">
+                        {TESTIMONIALS[quoteIndex].role}
+                      </p>
+                    </div>
                   </div>
+                </div>
+                <div className="mt-4 flex gap-1.5">
+                  {TESTIMONIALS.map((t, i) => (
+                    <button
+                      key={t.name}
+                      type="button"
+                      onClick={() => setQuoteIndex(i)}
+                      aria-label={`Show testimonial ${i + 1}`}
+                      className={`h-1 rounded-full transition-all ${
+                        i === quoteIndex ? "w-6 bg-[#E53E3E]" : "w-1.5 bg-white/20"
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -307,7 +392,7 @@ export default function Login() {
             </Link>
 
             {status === "success" ? (
-              <div className="flex flex-col items-center py-10 text-center">
+              <div className="flex flex-col items-center py-10 text-center" role="status" aria-live="polite">
                 <div className="lg-pop mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
                   <ShieldCheck className="h-8 w-8" />
                 </div>
@@ -335,15 +420,27 @@ export default function Login() {
                   Manage your bookings, fleet, and properties in one place.
                 </p>
 
-                <p className="mb-6 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-400">
-                  Demo admin login:{" "}
-                  <span className="font-medium text-gray-500">
-                    admin@gmail.com / 123456
-                  </span>
-                  . Any other email signs in as a customer.
-                </p>
+                {showDemoBanner && (
+                  <div className="mb-6 flex items-start justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-400">
+                    <span>
+                      Demo admin login:{" "}
+                      <span className="font-medium text-gray-500">
+                        admin@gmail.com / 123456
+                      </span>
+                      . Any other email signs in as a customer.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowDemoBanner(false)}
+                      aria-label="Dismiss"
+                      className="mt-0.5 flex-shrink-0 text-gray-300 hover:text-gray-500"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleEmailSubmit} className="space-y-5">
                   <FloatingField
                     label="Email Address"
                     name="email"
@@ -360,7 +457,9 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={handleChange}
+                    onKeyUp={handlePasswordKeyUp}
                     error={errors.password}
+                    hint={capsLockOn ? "Caps Lock is on" : null}
                     icon={<Lock className="h-4 w-4" />}
                     endAdornment={
                       <button
@@ -401,7 +500,7 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="lg-btn relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#E53E3E] to-red-600 py-3.5 font-semibold text-white shadow-lg shadow-red-200 transition-all hover:shadow-red-300 active:scale-[0.98] disabled:opacity-80"
+                    className="lg-btn relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#E53E3E] to-red-600 py-3.5 font-semibold text-white shadow-lg shadow-red-200 transition-all hover:shadow-red-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-80"
                   >
                     <span className="lg-shine pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/25" />
                     {status === "loading" ? (
@@ -421,31 +520,6 @@ export default function Login() {
                   Or
                   <span className="h-px flex-1 bg-gray-100" />
                 </div>
-
-                <button
-                  type="button"
-                  className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.58v3h3.93c2.3-2.12 3.62-5.25 3.62-8.82z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.93-3c-1.09.73-2.48 1.16-4 1.16-3.08 0-5.68-2.08-6.61-4.87H1.34v3.09C3.31 21.3 7.34 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.39 14.38c-.24-.73-.38-1.5-.38-2.38s.14-1.65.38-2.38V6.53H1.34C.49 8.2 0 10.05 0 12s.49 3.8 1.34 5.47z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.94 1.19 15.24 0 12 0 7.34 0 3.31 2.7 1.34 6.53l4.05 3.09C6.32 6.83 8.92 4.75 12 4.75z"
-                    />
-                  </svg>
-                  Continue with Google
-                </button>
 
                 <p className="mt-8 text-center text-sm text-gray-500">
                   Don't have an account?{" "}
